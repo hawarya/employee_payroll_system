@@ -1,0 +1,9 @@
+# Java / Spring Boot
+application.properties
+application.yml
+
+# Environment files
+.env
+.env.local
+
+node_modules/
