@@ -64,24 +64,24 @@ public class SalaryService {
             Double netSalary = calculateNetSalary(emp);
             
             if (emp.getType() == EmployeeType.FULL_TIME) {
-                document.add(new Paragraph("Base Salary: $" + emp.getBaseSalary()));
-                document.add(new Paragraph("Bonus: +$" + emp.getBonus()));
-                document.add(new Paragraph("Tax Deduction: -$" + emp.getTaxDeduction()));
-                document.add(new Paragraph("PF Deduction: -$" + emp.getPfDeduction()));
+                document.add(new Paragraph("Base Salary: \u20B9" + emp.getBaseSalary()));
+                document.add(new Paragraph("Bonus: +\u20B9" + emp.getBonus()));
+                document.add(new Paragraph("Tax Deduction: -\u20B9" + emp.getTaxDeduction()));
+                document.add(new Paragraph("PF Deduction: -\u20B9" + emp.getPfDeduction()));
             } else if (emp.getType() == EmployeeType.PART_TIME) {
                 double[] ot = calculateOvertimeBreakdown(emp.getHoursWorked(), emp.getHourlyRate());
-                document.add(new Paragraph("Hourly Rate: $" + emp.getHourlyRate()));
+                document.add(new Paragraph("Hourly Rate: \u20B9" + emp.getHourlyRate()));
                 document.add(new Paragraph("Hours Worked: " + emp.getHoursWorked() + " hrs"));
-                document.add(new Paragraph("Regular Pay (up to 8h): $" + String.format("%.2f", ot[0])));
+                document.add(new Paragraph("Regular Pay (up to 8h): \u20B9" + String.format("%.2f", ot[0])));
                 if (ot[1] > 0) {
-                    document.add(new Paragraph("Overtime Pay (1.5x): +$" + String.format("%.2f", ot[1])));
+                    document.add(new Paragraph("Overtime Pay (1.5x): +\u20B9" + String.format("%.2f", ot[1])));
                 }
             } else if (emp.getType() == EmployeeType.CONTRACT) {
-                document.add(new Paragraph("Contract Amount: $" + emp.getContractAmount()));
+                document.add(new Paragraph("Contract Amount: \u20B9" + emp.getContractAmount()));
             }
             
             document.add(new Paragraph("----------------------------------"));
-            document.add(new Paragraph("NET PAY: $" + netSalary));
+            document.add(new Paragraph("NET PAY: \u20B9" + netSalary));
             document.add(new Paragraph("----------------------------------"));
             document.add(new Paragraph("Generated automatically by Employee Payroll System."));
             

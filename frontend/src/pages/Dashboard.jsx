@@ -125,23 +125,6 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Banner */}
-        <div className="bg-gradient-to-r from-brand-700 to-brand-900 rounded-3xl p-8 text-white shadow-xl shadow-brand-500/20 flex flex-col md:flex-row items-center justify-between overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-          <div className="relative z-10">
-            <h2 className="text-2xl font-bold mb-2">Automated Payroll Calculation</h2>
-            <p className="text-brand-200 leading-relaxed max-w-lg">Full-time, part-time (with overtime 1.5×), and contract. Generate professional PDF payslips in one click.</p>
-          </div>
-          <div className="relative z-10 mt-6 md:mt-0">
-            <div className="p-4 bg-white/10 backdrop-blur border border-white/20 rounded-2xl flex gap-4 shadow-2xl">
-              <Banknote className="w-10 h-10 text-green-300" />
-              <div>
-                <p className="text-xs text-brand-200 uppercase tracking-widest font-medium">Next Payout</p>
-                <p className="text-xl font-bold">1st of Next Month</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
@@ -272,7 +255,7 @@ export default function Dashboard() {
             <p className="text-sm text-slate-500">{totalLeave} days remaining</p>
           </div>
         </Link>
-        <Link to="/profile" className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-brand-200 hover:shadow-md transition-all group flex items-center gap-4">
+        <Link to="/profile" className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-brand-100 hover:shadow-md transition-all group flex items-center gap-4">
           <div className="p-3 bg-brand-50 rounded-2xl group-hover:scale-110 transition-transform">
             <Banknote className="w-6 h-6 text-brand-500" />
           </div>

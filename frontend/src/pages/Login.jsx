@@ -28,12 +28,9 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-        <div className="p-8 bg-brand-900 border-b border-brand-800 text-center">
-            <div className="mx-auto w-16 h-16 bg-brand-800 rounded-2xl flex items-center justify-center mb-4 shadow-inner">
-                <Receipt className="w-8 h-8 text-brand-300" />
-            </div>
-            <h2 className="text-2xl font-bold text-white tracking-wide">Welcome Back</h2>
-            <p className="text-brand-200 text-sm mt-2">Sign in to manage your payroll</p>
+        <div className="p-8 bg-brand-50 border-b border-brand-100 text-center">
+            <h2 className="text-3xl font-black text-brand-600 tracking-tighter mb-1">Pay<span className="text-slate-800">Matrix</span></h2>
+            <p className="text-slate-500 text-sm mt-2 font-medium">Sign in to manage your payroll</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -61,6 +58,11 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
             />
+            <div className="flex justify-end mt-2">
+              <Link to="/forgot-password" size="sm" className="text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors pl-1">
+                Forgot Password?
+              </Link>
+            </div>
           </div>
           <button
             type="submit"
@@ -70,9 +72,11 @@ export default function Login() {
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
           </button>
 
-          <p className="text-center text-slate-500 text-sm font-medium mt-6">
-            Don't have an account? <Link to="/signup" className="text-brand-600 hover:text-brand-700 transition-colors">Register here</Link>
-          </p>
+          <div className="pt-4 mt-6 border-t border-slate-100 text-center">
+            <p className="text-slate-400 text-xs">
+              Secure automated payroll system © {new Date().getFullYear()}
+            </p>
+          </div>
         </form>
       </div>
     </div>

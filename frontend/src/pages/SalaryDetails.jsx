@@ -78,19 +78,19 @@ export default function SalaryDetails() {
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <span className="text-slate-600">Base Salary</span>
-                                <span className="font-semibold">${emp.baseSalary?.toFixed(2)}</span>
+                                <span className="font-semibold">₹{emp.baseSalary?.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-emerald-600">
                                 <span>Bonus</span>
-                                <span className="font-semibold">+ ${emp.bonus?.toFixed(2)}</span>
+                                <span className="font-semibold">+ ₹{emp.bonus?.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-red-500">
                                 <span>Tax Deduction</span>
-                                <span className="font-semibold">- ${emp.taxDeduction?.toFixed(2)}</span>
+                                <span className="font-semibold">- ₹{emp.taxDeduction?.toFixed(2)}</span>
                             </div>
                              <div className="flex justify-between text-amber-500">
                                 <span>PF Deduction</span>
-                                <span className="font-semibold">- ${emp.pfDeduction?.toFixed(2)}</span>
+                                <span className="font-semibold">- ₹{emp.pfDeduction?.toFixed(2)}</span>
                             </div>
                         </div>
                     )}
@@ -99,7 +99,7 @@ export default function SalaryDetails() {
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <span className="text-slate-600">Hourly Rate</span>
-                                <span className="font-semibold">${emp.hourlyRate?.toFixed(2)}</span>
+                                <span className="font-semibold">₹{emp.hourlyRate?.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-600">Hours Worked</span>
@@ -112,7 +112,7 @@ export default function SalaryDetails() {
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <span className="text-slate-600">Contract Amount</span>
-                                <span className="font-semibold">${emp.contractAmount?.toFixed(2)}</span>
+                                <span className="font-semibold">₹{emp.contractAmount?.toFixed(2)}</span>
                             </div>
                         </div>
                     )}
@@ -127,7 +127,7 @@ export default function SalaryDetails() {
                 </div>
                 <div className="relative z-10">
                     <p className="text-brand-300 font-medium mb-1">Net Payable Amount</p>
-                    <h2 className="text-4xl font-black mb-6 tracking-tight">${data.netSalary?.toFixed(2)}</h2>
+                    <h2 className="text-4xl font-black mb-6 tracking-tight">₹{data.netSalary?.toFixed(2)}</h2>
                     
                     <button onClick={handleDownloadPdf} className="w-full p-4 bg-white hover:bg-slate-50 text-brand-900 rounded-2xl font-bold flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-white/10">
                         <Download className="w-5 h-5" />

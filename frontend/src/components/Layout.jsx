@@ -29,10 +29,9 @@ export default function Layout() {
     href === '/' ? location.pathname === '/' : location.pathname.startsWith(href);
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full bg-brand-900 border-r border-brand-800 shadow-xl">
-      <div className="p-6 flex items-center gap-3 border-b border-brand-800">
-        <Receipt className="text-brand-300 w-8 h-8" />
-        <h1 className="text-xl font-bold text-white tracking-wide">Pay<span className="text-brand-300">Roll</span></h1>
+    <div className="flex flex-col h-full bg-white border-r border-slate-200 shadow-sm">
+      <div className="p-6 flex items-center justify-center border-b border-slate-100">
+        <h1 className="text-2xl font-black text-brand-600 tracking-tighter">Pay<span className="text-slate-800">Matrix</span></h1>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -45,26 +44,26 @@ export default function Layout() {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 active
-                  ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30'
-                  : 'text-brand-100 hover:bg-brand-800 hover:text-white'
+                  ? 'bg-brand-100 text-brand-700 shadow-sm'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-brand-600'
               }`}
             >
-              <item.icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-white' : 'text-brand-300'}`} />
+              <item.icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-brand-600' : 'text-slate-400'}`} />
               <span className="font-medium">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-brand-800">
-        <div className="px-4 py-3 bg-brand-950/50 rounded-xl mb-3 border border-brand-800/50">
-          <p className="text-xs text-brand-300 font-medium">Logged in as</p>
-          <p className="font-semibold text-white capitalize truncate">{currentUser?.username}</p>
-          <p className="text-xs text-brand-400 mt-0.5">{isAdmin ? 'Administrator' : 'Employee'}</p>
+      <div className="p-4 border-t border-slate-100">
+        <div className="px-4 py-3 bg-slate-50 rounded-xl mb-3 border border-slate-100">
+          <p className="text-xs text-slate-400 font-medium">Logged in as</p>
+          <p className="font-semibold text-slate-700 capitalize truncate">{currentUser?.username}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{isAdmin ? 'Administrator' : 'Employee'}</p>
         </div>
         <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-brand-200 hover:text-white hover:bg-red-500/20 rounded-xl transition-colors ring-1 ring-inset ring-brand-800 hover:ring-red-500/30"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors ring-1 ring-inset ring-slate-200 hover:ring-red-100"
         >
           <LogOut className="w-4 h-4" />
           <span className="font-medium">Sign Out</span>

@@ -98,19 +98,19 @@ export default function EmployeeForm() {
             {formData.type === 'FULL_TIME' && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Base Salary ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Base Salary (₹)</label>
                   <input type="number" name="baseSalary" value={formData.baseSalary} onChange={handleChange} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Bonus ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Bonus (₹)</label>
                   <input type="number" name="bonus" value={formData.bonus} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Tax Deduction ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Tax Deduction (₹)</label>
                   <input type="number" name="taxDeduction" value={formData.taxDeduction} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">PF Deduction ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">PF Deduction (₹)</label>
                   <input type="number" name="pfDeduction" value={formData.pfDeduction} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
                 </div>
               </>
@@ -119,7 +119,7 @@ export default function EmployeeForm() {
             {formData.type === 'PART_TIME' && (
                 <>
                  <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Hourly Rate ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Hourly Rate (₹)</label>
                   <input type="number" name="hourlyRate" value={formData.hourlyRate} onChange={handleChange} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
                 </div>
                 <div>
@@ -131,7 +131,7 @@ export default function EmployeeForm() {
 
              {formData.type === 'CONTRACT' && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Contract Amount ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Contract Amount (₹)</label>
                   <input type="number" name="contractAmount" value={formData.contractAmount} onChange={handleChange} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
                 </div>
             )}

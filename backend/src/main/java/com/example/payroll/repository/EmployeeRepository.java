@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Page<Employee> findByNameContainingIgnoreCase(String name, Pageable pageable);
     Optional<Employee> findByEmployeeId(String employeeId);
+    Optional<Employee> findByEmail(String email);
 }

@@ -73,9 +73,9 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         {[
           { label: 'Total Employees', value: filtered.length, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50' },
-          { label: 'Total Net Payroll', value: `$${totalPayroll.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Banknote, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-          { label: 'Total Bonuses', value: `$${totalBonus.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: 'text-violet-500', bg: 'bg-violet-50' },
-          { label: 'Total Deductions', value: `$${totalDeductions.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: BarChart3, color: 'text-red-500', bg: 'bg-red-50' },
+          { label: 'Total Net Payroll', value: `₹${totalPayroll.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Banknote, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+          { label: 'Total Bonuses', value: `₹${totalBonus.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: 'text-violet-500', bg: 'bg-violet-50' },
+          { label: 'Total Deductions', value: `₹${totalDeductions.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: BarChart3, color: 'text-red-500', bg: 'bg-red-50' },
         ].map(c => (
           <div key={c.label} className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center justify-between">
             <div>
@@ -137,19 +137,19 @@ export default function ReportsPage() {
                       </span>
                     </td>
                     <td className="p-4 text-right text-slate-700 font-medium">
-                      {emp.baseSalary != null ? `$${emp.baseSalary.toFixed(2)}` : '—'}
+                      {emp.baseSalary != null ? `₹${emp.baseSalary.toFixed(2)}` : '—'}
                     </td>
                     <td className="p-4 text-right text-emerald-600 font-medium">
-                      {emp.bonus > 0 ? `+$${emp.bonus.toFixed(2)}` : '—'}
+                      {emp.bonus > 0 ? `+₹${emp.bonus.toFixed(2)}` : '—'}
                     </td>
                     <td className="p-4 text-right text-red-500 font-medium">
-                      {emp.taxDeduction > 0 ? `-$${emp.taxDeduction.toFixed(2)}` : '—'}
+                      {emp.taxDeduction > 0 ? `-₹${emp.taxDeduction.toFixed(2)}` : '—'}
                     </td>
                     <td className="p-4 text-right text-amber-600 font-medium">
-                      {emp.pfDeduction > 0 ? `-$${emp.pfDeduction.toFixed(2)}` : '—'}
+                      {emp.pfDeduction > 0 ? `-₹${emp.pfDeduction.toFixed(2)}` : '—'}
                     </td>
                     <td className="p-4 text-right">
-                      <span className="text-lg font-bold text-brand-700">${(emp.netSalary || 0).toFixed(2)}</span>
+                      <span className="text-lg font-bold text-brand-700">₹{(emp.netSalary || 0).toFixed(2)}</span>
                     </td>
                   </tr>
                 ))}
@@ -159,10 +159,10 @@ export default function ReportsPage() {
                   <tr className="bg-slate-50 font-bold border-t-2 border-slate-200">
                     <td className="p-4 text-slate-700" colSpan="3">Total ({filtered.length} employees)</td>
                     <td className="p-4 text-right text-slate-700">—</td>
-                    <td className="p-4 text-right text-emerald-600">+${totalBonus.toFixed(2)}</td>
+                    <td className="p-4 text-right text-emerald-600">+₹{totalBonus.toFixed(2)}</td>
                     <td className="p-4 text-right text-red-500">—</td>
                     <td className="p-4 text-right text-amber-600">—</td>
-                    <td className="p-4 text-right text-brand-700 text-lg">${totalPayroll.toFixed(2)}</td>
+                    <td className="p-4 text-right text-brand-700 text-lg">₹{totalPayroll.toFixed(2)}</td>
                   </tr>
                 </tfoot>
               )}
