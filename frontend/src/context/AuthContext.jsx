@@ -58,6 +58,24 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  // OTP-based login: Step 1 - Send OTP
+  const sendOtp = async (email) => {
+    const res = await axios.post('/api/auth/send-otp', { email });
+    return res.data;
+  };
+
+  // OTP-based login: Step 2 - Verify OTP and get JWT
+  const verifyOtpLogin = async (email, otp) => {
+    const res = await axios.post('/api/auth/verify-otp-login', { email, otp });
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+      setCurrentUser(res.data);
+    }
+    return res.data;
+  };
+
   const signup = async (employeeId, name, password) => {
     return await axios.post('/api/auth/signup', { employeeId, name, password });
   };
@@ -72,6 +90,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     login,
+    sendOtp,
+    verifyOtpLogin,
     signup,
     logout
   };

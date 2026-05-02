@@ -1,0 +1,4 @@
+TimeoutError: Waiting for element to be located By(css selector, div.bg-emerald-50.text-emerald-700)
+Wait timed out after 10082ms
+    at D:\employee_payroll\node_modules\selenium-webdriver\lib\webdriver.js:929:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

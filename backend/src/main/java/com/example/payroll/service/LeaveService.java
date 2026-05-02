@@ -5,8 +5,13 @@ import com.example.payroll.models.Leave.LeaveStatus;
 import com.example.payroll.models.Leave.LeaveType;
 import com.example.payroll.models.LeaveBalance;
 import com.example.payroll.models.Notification.NotificationType;
+import com.example.payroll.models.Role;
+import com.example.payroll.models.User;
+import com.example.payroll.models.Employee;
+import com.example.payroll.repository.EmployeeRepository;
 import com.example.payroll.repository.LeaveRepository;
 import com.example.payroll.repository.LeaveBalanceRepository;
+import com.example.payroll.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +19,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class LeaveService {
@@ -28,6 +36,15 @@ public class LeaveService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     /** Initialize leave balance for a new employee. Idempotent. */
     public LeaveBalance initBalance(String employeeId) {
@@ -45,6 +62,12 @@ public class LeaveService {
 
     /** Employee applies for leave */
     public Leave applyLeave(String employeeId, String employeeName, Leave leaveRequest) {
+        // Fetch actual employee details for accurate names and emails
+        Employee applicant = employeeRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found: " + employeeId));
+        
+        String actualName = applicant.getName();
+
         // Calculate total days
         long days = java.time.temporal.ChronoUnit.DAYS.between(leaveRequest.getStartDate(), leaveRequest.getEndDate()) + 1;
         leaveRequest.setTotalDays((int) days);
@@ -54,10 +77,36 @@ public class LeaveService {
         validateBalance(balance, leaveRequest.getLeaveType(), (int) days);
 
         leaveRequest.setEmployeeId(employeeId);
-        leaveRequest.setEmployeeName(employeeName);
+        leaveRequest.setEmployeeName(actualName);
         leaveRequest.setStatus(LeaveStatus.PENDING);
         leaveRequest.setAppliedOn(LocalDateTime.now());
-        return leaveRepository.save(leaveRequest);
+        
+        Leave savedLeave = leaveRepository.save(leaveRequest);
+        
+        // Notify all administrators via in-app notification and Email
+        List<User> admins = userRepository.findByRolesIn(Collections.singleton(Role.ROLE_ADMIN));
+        for (User admin : admins) {
+            notificationService.createNotification(
+                admin.getEmployeeId(),
+                "New leave request from " + actualName + " (" + employeeId + ") for " + leaveRequest.getStartDate(),
+                NotificationType.INFO
+            );
+
+            // Send Email to Admin
+            employeeRepository.findByEmployeeId(admin.getEmployeeId()).ifPresent(adminEmp -> {
+                if (adminEmp.getEmail() != null && !adminEmp.getEmail().isBlank()) {
+                    emailService.sendLeaveApplicationEmail(
+                        adminEmp.getEmail(),
+                        actualName,
+                        leaveRequest.getStartDate().toString(),
+                        leaveRequest.getEndDate().toString(),
+                        leaveRequest.getLeaveType().toString()
+                    );
+                }
+            });
+        }
+        
+        return savedLeave;
     }
 
     /** Admin approves a leave */
@@ -80,12 +129,24 @@ public class LeaveService {
         
         Leave updated = leaveRepository.save(leave);
         
-        // Notify employee
+        // Notify employee (In-app)
         notificationService.createNotification(
             leave.getEmployeeId(),
             "Your leave request for " + leave.getStartDate() + " has been APPROVED.",
             NotificationType.SUCCESS
         );
+
+        // Notify employee (Email)
+        employeeRepository.findByEmployeeId(leave.getEmployeeId()).ifPresent(emp -> {
+            if (emp.getEmail() != null && !emp.getEmail().isBlank()) {
+                emailService.sendLeaveStatusUpdateEmail(
+                    emp.getEmail(),
+                    "APPROVED",
+                    leave.getStartDate().toString(),
+                    null
+                );
+            }
+        });
         
         return updated;
     }
@@ -106,12 +167,24 @@ public class LeaveService {
         
         Leave updated = leaveRepository.save(leave);
         
-        // Notify employee
+        // Notify employee (In-app)
         notificationService.createNotification(
             leave.getEmployeeId(),
             "Your leave request for " + leave.getStartDate() + " was REJECTED. Reason: " + reason,
             NotificationType.ERROR
         );
+
+        // Notify employee (Email)
+        employeeRepository.findByEmployeeId(leave.getEmployeeId()).ifPresent(emp -> {
+            if (emp.getEmail() != null && !emp.getEmail().isBlank()) {
+                emailService.sendLeaveStatusUpdateEmail(
+                    emp.getEmail(),
+                    "REJECTED",
+                    leave.getStartDate().toString(),
+                    reason
+                );
+            }
+        });
         
         return updated;
     }

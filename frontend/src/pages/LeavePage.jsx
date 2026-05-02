@@ -63,7 +63,7 @@ export default function LeavePage() {
     setSubmitting(true); setFormMsg(null);
     try {
       await axios.post('/api/leaves/apply', form);
-      setFormMsg({ type: 'success', text: 'Leave applied successfully! Awaiting approval.' });
+      setFormMsg({ type: 'success', text: 'Leave applied successfully! Email notification sent to admin.' });
       setForm({ leaveType: 'CASUAL', startDate: '', endDate: '', reason: '' });
       fetchMyLeaves(); fetchBalance();
       setTimeout(() => setShowForm(false), 1500);

@@ -13,6 +13,7 @@ public class User {
     
     private String employeeId;
     private String name;
+    private String email;
     private String password;
     
     private Set<Role> roles;
