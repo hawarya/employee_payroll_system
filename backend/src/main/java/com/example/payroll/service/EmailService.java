@@ -16,12 +16,16 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
+    @Value("${spring.mail.username}")
+    private String fromEmail;
+
     /**
      * Send OTP email for login or password reset.
      * Called by EmailEventListener (event-driven).
      */
     public void sendOtpEmail(String email, String otp, String subject, String purposeText) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
         message.setTo(email);
         message.setSubject(subject);
         message.setText(String.format(
@@ -36,17 +40,19 @@ public class EmailService {
         ));
 
         try {
-            System.out.println("DEBUG: Sending OTP email to " + email);
+            System.out.println("DEBUG: Sending OTP email to " + email + " from " + fromEmail);
             mailSender.send(message);
             System.out.println("DEBUG: OTP email sent successfully to " + email);
         } catch (Exception e) {
             System.err.println("CRITICAL: Failed to send OTP email to " + email + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Async
     public void sendLeaveApplicationEmail(String adminEmail, String employeeName, String startDate, String endDate, String type) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
         message.setTo(adminEmail);
         message.setSubject("New Leave Application: " + employeeName);
         message.setText(String.format(
@@ -73,6 +79,7 @@ public class EmailService {
     @Async
     public void sendLeaveStatusUpdateEmail(String employeeEmail, String status, String startDate, String reason) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
         message.setTo(employeeEmail);
         message.setSubject("Leave Request Update - " + status);
         

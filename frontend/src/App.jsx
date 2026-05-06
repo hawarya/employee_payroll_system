@@ -12,6 +12,7 @@ import SalaryDetails from './pages/SalaryDetails';
 import AttendancePage from './pages/AttendancePage';
 import LeavePage from './pages/LeavePage';
 import ReportsPage from './pages/ReportsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function AppRoutes() {
   const { currentUser } = useAuth();
@@ -30,7 +31,7 @@ function AppRoutes() {
         <Route path="employees/new" element={<PrivateRoute adminOnly={true}><EmployeeForm /></PrivateRoute>} />
         <Route path="employees/edit/:id" element={<PrivateRoute adminOnly={true}><EmployeeForm /></PrivateRoute>} />
         <Route path="employees/:id/salary" element={<SalaryDetails />} />
-        <Route path="profile" element={<SalaryDetails />} />
+        <Route path="profile" element={<ProfilePage />} />
         <Route path="reports" element={<PrivateRoute adminOnly={true}><ReportsPage /></PrivateRoute>} />
       </Route>
     </Routes>

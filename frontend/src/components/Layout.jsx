@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, UserPlus, LogOut, Receipt, Clock, CalendarDays, BarChart3, Menu, X } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { LayoutDashboard, Users, UserPlus, LogOut, Receipt, Clock, CalendarDays, BarChart3, Menu, X, Sun, Moon, UserCircle } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 
 export default function Layout() {
   const { currentUser, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -21,15 +23,16 @@ export default function Layout() {
     navigation.push({ name: 'Employees', href: '/employees', icon: Users });
     navigation.push({ name: 'Add Employee', href: '/employees/new', icon: UserPlus });
     navigation.push({ name: 'Reports', href: '/reports', icon: BarChart3 });
+    navigation.push({ name: 'My Profile', href: '/profile', icon: UserCircle });
   } else {
-    navigation.push({ name: 'My Payslip', href: '/profile', icon: Receipt });
-  }
+  navigation.push({ name: 'My Profile', href: '/profile', icon: UserCircle });
+}
 
   const isActive = (href) =>
     href === '/' ? location.pathname === '/' : location.pathname.startsWith(href);
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full bg-white border-r border-slate-200 shadow-sm">
+    <div className="flex flex-col h-full bg-white dark:bg-[#16162a] border-r border-slate-200 dark:border-slate-700/50 shadow-sm">
       <div className="p-6 flex items-center justify-center border-b border-slate-100">
         <h1 className="text-2xl font-black text-brand-600 tracking-tighter">Pay<span className="text-slate-800">Matrix</span></h1>
       </div>
@@ -55,15 +58,22 @@ export default function Layout() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-100">
-        <div className="px-4 py-3 bg-slate-50 rounded-xl mb-3 border border-slate-100">
+      <div className="p-4 border-t border-slate-100 dark:border-slate-700/50">
+        <div className="px-4 py-3 bg-slate-50 dark:bg-[#0f0f1a] rounded-xl mb-3 border border-slate-100 dark:border-slate-700/50">
           <p className="text-xs text-slate-400 font-medium">Logged in as</p>
-          <p className="font-semibold text-slate-700 capitalize truncate">{currentUser?.username}</p>
+          <p className="font-semibold text-slate-700 dark:text-slate-200 capitalize truncate">{currentUser?.username}</p>
           <p className="text-xs text-slate-400 mt-0.5">{isAdmin ? 'Administrator' : 'Employee'}</p>
         </div>
         <button
+          onClick={toggleTheme}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 mb-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/30 rounded-xl transition-colors text-sm font-medium"
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+        </button>
+        <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors ring-1 ring-inset ring-slate-200 hover:ring-red-100"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors ring-1 ring-inset ring-slate-200 dark:ring-slate-700 hover:ring-red-100"
         >
           <LogOut className="w-4 h-4" />
           <span className="font-medium">Sign Out</span>
@@ -91,7 +101,7 @@ export default function Layout() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center px-4 md:px-8 gap-4 shadow-sm flex-shrink-0 z-10">
+        <header className="bg-white/80 dark:bg-[#16162a]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/50 h-16 flex items-center px-4 md:px-8 gap-4 shadow-sm flex-shrink-0 z-10">
           {/* Mobile menu button */}
           <button
             className="md:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors"

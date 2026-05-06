@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Loader2, Mail, KeyRound, ArrowRight, ShieldCheck, Lock } from 'lucide-react';
+import { Loader2, Mail, KeyRound, ArrowRight, ShieldCheck, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
-  const [loginMode, setLoginMode] = useState('otp'); // 'otp' or 'password'
+  const [loginMode, setLoginMode] = useState('otp');
   const [email, setEmail] = useState('');
   const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
-  const [step, setStep] = useState(1); // 1 = enter email, 2 = enter OTP
+  const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [otpSentMessage, setOtpSentMessage] = useState('');
@@ -24,19 +25,13 @@ export default function Login() {
     }
   }, [step]);
 
-  // Handle OTP input
   const handleOtpChange = (index, value) => {
     if (value.length > 1) value = value.slice(-1);
     if (!/^\d*$/.test(value)) return;
-
     const newOtp = [...otpValues];
     newOtp[index] = value;
     setOtpValues(newOtp);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      otpRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) otpRefs.current[index + 1]?.focus();
   };
 
   const handleOtpKeyDown = (index, e) => {
@@ -49,19 +44,15 @@ export default function Login() {
     e.preventDefault();
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
     const newOtp = [...otpValues];
-    for (let i = 0; i < 6; i++) {
-      newOtp[i] = pasted[i] || '';
-    }
+    for (let i = 0; i < 6; i++) newOtp[i] = pasted[i] || '';
     setOtpValues(newOtp);
     const nextEmpty = newOtp.findIndex(v => !v);
     otpRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
   };
 
-  // Step 1: Send OTP
   const handleSendOtp = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    setError(''); setLoading(true);
     try {
       const res = await sendOtp(email);
       setOtpSentMessage(res.message || 'OTP sent to your email!');
@@ -72,16 +63,11 @@ export default function Login() {
     setLoading(false);
   };
 
-  // Step 2: Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const otpCode = otpValues.join('');
-    if (otpCode.length !== 6) {
-      setError('Please enter the complete 6-digit OTP.');
-      return;
-    }
-    setError('');
-    setLoading(true);
+    if (otpCode.length !== 6) { setError('Please enter the complete 6-digit OTP.'); return; }
+    setError(''); setLoading(true);
     try {
       await verifyOtpLogin(email, otpCode);
       navigate('/');
@@ -93,11 +79,9 @@ export default function Login() {
     setLoading(false);
   };
 
-  // Password login
   const handlePasswordLogin = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    setError(''); setLoading(true);
     try {
       await login(employeeId, password);
       navigate('/');
@@ -108,8 +92,7 @@ export default function Login() {
   };
 
   const handleResendOtp = async () => {
-    setError('');
-    setLoading(true);
+    setError(''); setLoading(true);
     try {
       await sendOtp(email);
       setOtpSentMessage('New OTP sent to your email!');
@@ -122,149 +105,243 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 30%, #1a0a2e 60%, #0a0f1a 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Ambient glow blobs */}
+      <div style={{
+        position: 'absolute', top: '-10%', left: '-5%', width: '500px', height: '500px',
+        background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-10%', right: '-5%', width: '400px', height: '400px',
+        background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', top: '40%', right: '20%', width: '300px', height: '300px',
+        background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+
+      {/* Glassmorphism card */}
+      <div style={{
+        width: '100%', maxWidth: '440px',
+        background: 'rgba(255,255,255,0.05)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '24px',
+        boxShadow: '0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset',
+        overflow: 'hidden',
+        position: 'relative',
+        zIndex: 10,
+      }}>
+
         {/* Header */}
-        <div className="p-8 bg-brand-50 border-b border-brand-100 text-center">
-          <h2 className="text-3xl font-black text-brand-600 tracking-tighter mb-1">
-            Pay<span className="text-slate-800">Matrix</span>
-          </h2>
-          <p className="text-slate-500 text-sm mt-2 font-medium">Sign in to manage your payroll</p>
+        <div style={{
+          padding: '2.5rem 2.5rem 2rem',
+          textAlign: 'center',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          background: 'linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%)',
+        }}>
+          {/* Logo icon */}
+          <div style={{
+            width: '56px', height: '56px',
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            borderRadius: '16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 1.25rem',
+            boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+          }}>
+            <ShieldCheck style={{ width: '28px', height: '28px', color: '#fff' }} />
+          </div>
+          <h1 style={{
+            fontSize: '2rem', fontWeight: '900',
+            background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.04em', margin: '0 0 0.5rem',
+          }}>
+            Pay<span style={{
+              background: 'linear-gradient(135deg, #f0abfc, #c084fc)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>Matrix</span>
+          </h1>
+          <p style={{ color: 'rgba(203,213,225,0.7)', fontSize: '0.875rem', margin: 0, fontWeight: '400' }}>
+            Secure employee payroll management
+          </p>
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex border-b border-slate-100">
-          <button
-            onClick={() => { setLoginMode('otp'); setStep(1); setError(''); }}
-            className={`flex-1 py-3.5 text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-              loginMode === 'otp'
-                ? 'text-brand-600 border-b-2 border-brand-600 bg-brand-50/50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            OTP Login
-          </button>
-          <button
-            onClick={() => { setLoginMode('password'); setError(''); }}
-            className={`flex-1 py-3.5 text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-              loginMode === 'password'
-                ? 'text-brand-600 border-b-2 border-brand-600 bg-brand-50/50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <Lock className="w-4 h-4" />
-            Password Login
-          </button>
+        <div style={{
+          display: 'flex',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(0,0,0,0.2)',
+        }}>
+          {[
+            { mode: 'otp', icon: ShieldCheck, label: 'OTP Login' },
+            { mode: 'password', icon: Lock, label: 'Password' },
+          ].map(({ mode, icon: Icon, label }) => (
+            <button
+              key={mode}
+              onClick={() => { setLoginMode(mode); setStep(1); setError(''); }}
+              style={{
+                flex: 1, padding: '0.875rem', border: 'none', cursor: 'pointer',
+                background: loginMode === mode
+                  ? 'linear-gradient(180deg, rgba(99,102,241,0.2) 0%, rgba(99,102,241,0.05) 100%)'
+                  : 'transparent',
+                color: loginMode === mode ? '#a5b4fc' : 'rgba(148,163,184,0.6)',
+                fontSize: '0.8125rem', fontWeight: '600',
+                borderBottom: loginMode === mode ? '2px solid #6366f1' : '2px solid transparent',
+                transition: 'all 0.2s ease',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+              }}
+            >
+              <Icon style={{ width: '15px', height: '15px' }} />
+              {label}
+            </button>
+          ))}
         </div>
 
-        <div className="p-8">
+        {/* Form Area */}
+        <div style={{ padding: '2rem 2.5rem 2.5rem' }}>
+
+          {/* Error */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 text-red-600 border border-red-100 rounded-2xl text-sm font-medium animate-in fade-in slide-in-from-top-2">
+            <div style={{
+              marginBottom: '1.25rem', padding: '0.875rem 1rem',
+              background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)',
+              borderRadius: '12px', color: '#fca5a5', fontSize: '0.8125rem', fontWeight: '500',
+            }}>
               {error}
             </div>
           )}
 
-          {/* ==================== OTP LOGIN MODE ==================== */}
+          {/* ── OTP Step 1 ── */}
           {loginMode === 'otp' && step === 1 && (
-            <form onSubmit={handleSendOtp} className="space-y-6">
+            <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-                <div className="relative group">
-                  <Mail className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  Email Address
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <Mail style={{
+                    position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)',
+                    width: '18px', height: '18px', color: 'rgba(148,163,184,0.6)',
+                  }} />
                   <input
-                    type="email"
-                    required
-                    className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="email" required
+                    value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="your.email@company.com"
+                    style={{
+                      width: '100%', boxSizing: 'border-box',
+                      paddingLeft: '3rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
+                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '12px', color: '#f1f5f9', fontSize: '0.9375rem', outline: 'none',
+                      transition: 'all 0.2s',
+                    }}
+                    onFocus={e => { e.target.style.border = '1px solid rgba(99,102,241,0.6)'; e.target.style.background = 'rgba(99,102,241,0.08)'; }}
+                    onBlur={e => { e.target.style.border = '1px solid rgba(255,255,255,0.12)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
                   />
                 </div>
               </div>
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-semibold shadow-lg shadow-brand-600/30 transition-all active:scale-[0.98] disabled:opacity-70 flex justify-center items-center gap-2"
+                type="submit" disabled={loading}
+                style={{
+                  width: '100%', padding: '0.9375rem',
+                  background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  border: 'none', borderRadius: '12px', color: '#fff',
+                  fontSize: '0.9375rem', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(99,102,241,0.4)',
+                  transition: 'all 0.2s',
+                }}
               >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <span>Send OTP</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
+                {loading ? <Loader2 style={{ width: '20px', height: '20px', animation: 'spin 1s linear infinite' }} /> : (
+                  <><span>Send OTP</span><ArrowRight style={{ width: '18px', height: '18px' }} /></>
                 )}
               </button>
-              <div className="flex justify-end">
-                <Link to="/forgot-password" className="text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+              <div style={{ textAlign: 'right' }}>
+                <Link to="/forgot-password" style={{ color: '#a5b4fc', fontSize: '0.8125rem', fontWeight: '600', textDecoration: 'none' }}>
                   Forgot Password?
                 </Link>
               </div>
             </form>
           )}
 
+          {/* ── OTP Step 2 ── */}
           {loginMode === 'otp' && step === 2 && (
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              {/* Success message */}
+            <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {otpSentMessage && (
-                <div className="p-4 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-2xl text-sm font-medium text-center">
-                  <ShieldCheck className="w-5 h-5 inline-block mr-2 -mt-0.5" />
+                <div style={{
+                  padding: '0.875rem 1rem', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+                  borderRadius: '12px', color: '#6ee7b7', fontSize: '0.8125rem', fontWeight: '500',
+                  display: 'flex', alignItems: 'center', gap: '0.5rem',
+                }}>
+                  <ShieldCheck style={{ width: '16px', height: '16px', flexShrink: 0 }} />
                   {otpSentMessage}
                 </div>
               )}
-
-              <div className="text-center">
-                <p className="text-slate-500 text-sm">
-                  Enter the 6-digit code sent to <span className="font-semibold text-slate-700">{email}</span>
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ color: 'rgba(148,163,184,0.8)', fontSize: '0.875rem', margin: 0 }}>
+                  Enter the 6-digit code sent to{' '}
+                  <span style={{ color: '#e2e8f0', fontWeight: '600' }}>{email}</span>
                 </p>
               </div>
-
-              {/* 6-digit OTP boxes */}
-              <div className="flex justify-center gap-3" onPaste={handleOtpPaste}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.625rem' }} onPaste={handleOtpPaste}>
                 {otpValues.map((val, i) => (
                   <input
-                    key={i}
-                    ref={(el) => (otpRefs.current[i] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={val}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-12 h-14 text-center text-xl font-bold rounded-xl border-2 border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none bg-slate-50 focus:bg-white"
+                    key={i} ref={el => (otpRefs.current[i] = el)}
+                    type="text" inputMode="numeric" maxLength={1} value={val}
+                    onChange={e => handleOtpChange(i, e.target.value)}
+                    onKeyDown={e => handleOtpKeyDown(i, e)}
+                    style={{
+                      width: '48px', height: '56px', textAlign: 'center',
+                      fontSize: '1.25rem', fontWeight: '700', color: '#f1f5f9',
+                      background: val ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.06)',
+                      border: val ? '2px solid rgba(99,102,241,0.6)' : '2px solid rgba(255,255,255,0.12)',
+                      borderRadius: '12px', outline: 'none', transition: 'all 0.15s',
+                    }}
+                    onFocus={e => { e.target.style.border = '2px solid rgba(99,102,241,0.8)'; e.target.style.background = 'rgba(99,102,241,0.1)'; }}
+                    onBlur={e => { e.target.style.border = val ? '2px solid rgba(99,102,241,0.6)' : '2px solid rgba(255,255,255,0.12)'; e.target.style.background = val ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.06)'; }}
                   />
                 ))}
               </div>
-
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-semibold shadow-lg shadow-brand-600/30 transition-all active:scale-[0.98] disabled:opacity-70 flex justify-center items-center gap-2"
+                type="submit" disabled={loading}
+                style={{
+                  width: '100%', padding: '0.9375rem',
+                  background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  border: 'none', borderRadius: '12px', color: '#fff',
+                  fontSize: '0.9375rem', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(99,102,241,0.4)',
+                }}
               >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <KeyRound className="w-4 h-4" />
-                    <span>Verify & Sign In</span>
-                  </>
+                {loading ? <Loader2 style={{ width: '20px', height: '20px', animation: 'spin 1s linear infinite' }} /> : (
+                  <><KeyRound style={{ width: '18px', height: '18px' }} /><span>Verify & Sign In</span></>
                 )}
               </button>
-
-              <div className="flex justify-between items-center text-sm">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => { setStep(1); setOtpValues(['', '', '', '', '', '']); setError(''); setOtpSentMessage(''); }}
-                  className="text-slate-500 hover:text-brand-600 font-medium transition-colors"
+                  onClick={() => { setStep(1); setOtpValues(['','','','','','']); setError(''); setOtpSentMessage(''); }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(148,163,184,0.7)', cursor: 'pointer', fontSize: '0.8125rem', fontWeight: '500', padding: 0 }}
                 >
                   ← Change email
                 </button>
                 <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  disabled={loading}
-                  className="text-brand-600 hover:text-brand-700 font-semibold transition-colors disabled:opacity-50"
+                  type="button" onClick={handleResendOtp} disabled={loading}
+                  style={{ background: 'none', border: 'none', color: '#a5b4fc', cursor: 'pointer', fontSize: '0.8125rem', fontWeight: '600', padding: 0 }}
                 >
                   Resend OTP
                 </button>
@@ -272,54 +349,91 @@ export default function Login() {
             </form>
           )}
 
-          {/* ==================== PASSWORD LOGIN MODE ==================== */}
+          {/* ── Password Login ── */}
           {loginMode === 'password' && (
-            <form onSubmit={handlePasswordLogin} className="space-y-6">
+            <form onSubmit={handlePasswordLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Employee / Admin ID</label>
+                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  Employee / Admin ID
+                </label>
                 <input
-                  type="text"
-                  required
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none"
-                  value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
+                  type="text" required
+                  value={employeeId} onChange={e => setEmployeeId(e.target.value)}
                   placeholder="e.g. EMP001 or admin1"
+                  style={{
+                    width: '100%', boxSizing: 'border-box',
+                    padding: '0.875rem 1rem',
+                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: '12px', color: '#f1f5f9', fontSize: '0.9375rem', outline: 'none',
+                  }}
+                  onFocus={e => { e.target.style.border = '1px solid rgba(99,102,241,0.6)'; e.target.style.background = 'rgba(99,102,241,0.08)'; }}
+                  onBlur={e => { e.target.style.border = '1px solid rgba(255,255,255,0.12)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                <input
-                  type="password"
-                  required
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-                <div className="flex justify-end mt-2">
-                  <Link to="/forgot-password" className="text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors pl-1">
+                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  Password
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'} required
+                    value={password} onChange={e => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    style={{
+                      width: '100%', boxSizing: 'border-box',
+                      padding: '0.875rem 3rem 0.875rem 1rem',
+                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '12px', color: '#f1f5f9', fontSize: '0.9375rem', outline: 'none',
+                    }}
+                    onFocus={e => { e.target.style.border = '1px solid rgba(99,102,241,0.6)'; e.target.style.background = 'rgba(99,102,241,0.08)'; }}
+                    onBlur={e => { e.target.style.border = '1px solid rgba(255,255,255,0.12)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
+                  />
+                  <button
+                    type="button" onClick={() => setShowPassword(s => !s)}
+                    style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'rgba(148,163,184,0.6)' }}
+                  >
+                    {showPassword ? <EyeOff style={{ width: '18px', height: '18px' }} /> : <Eye style={{ width: '18px', height: '18px' }} />}
+                  </button>
+                </div>
+                <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
+                  <Link to="/forgot-password" style={{ color: '#a5b4fc', fontSize: '0.8125rem', fontWeight: '600', textDecoration: 'none' }}>
                     Forgot Password?
                   </Link>
                 </div>
               </div>
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-semibold shadow-lg shadow-brand-600/30 transition-all active:scale-[0.98] disabled:opacity-70 flex justify-center items-center"
+                type="submit" disabled={loading}
+                style={{
+                  width: '100%', padding: '0.9375rem',
+                  background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  border: 'none', borderRadius: '12px', color: '#fff',
+                  fontSize: '0.9375rem', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(99,102,241,0.4)',
+                }}
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
+                {loading ? <Loader2 style={{ width: '20px', height: '20px', animation: 'spin 1s linear infinite' }} /> : 'Sign In'}
               </button>
             </form>
           )}
 
           {/* Footer */}
-          <div className="pt-4 mt-6 border-t border-slate-100 text-center">
-            <p className="text-slate-400 text-xs">
+          <div style={{
+            marginTop: '1.75rem', paddingTop: '1.25rem',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            textAlign: 'center',
+          }}>
+            <p style={{ color: 'rgba(100,116,139,0.7)', fontSize: '0.75rem', margin: 0 }}>
               Secure automated payroll system © {new Date().getFullYear()}
             </p>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input::placeholder { color: rgba(148,163,184,0.4) !important; }
+      `}</style>
     </div>
   );
 }
